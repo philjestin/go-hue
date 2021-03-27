@@ -9,6 +9,9 @@ A command-line tool for controlling Philips Hue smart lights that are connected 
 
 ```
 $ GO111MODULE=on go get -u "github.com/philjestin/go-hue"
+go: finding github.com/philjestin/go-hue v1.0.0
+go: downloading github.com/philjestin/go-hue v1.0.0
+go: extracting github.com/philjestin/go-hue v1.0.0
 ```
 
 ## Setup
