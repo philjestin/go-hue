@@ -166,7 +166,6 @@ func main() {
 
 			configData := readFromConfig()
 			toggleGroup(configData.HueIP, configData.HueUser, group, value)
-			// getGroups(configData.HueIP, configData.HueUser)
 		})
 
 	// parse command-line arguments from the STDIN
