@@ -11,12 +11,12 @@ import (
 func main() {
 	// Configure commando
 	commando.
-		SetExecutableName("gohue").
+		SetExecutableName("go-hue").
 		SetVersion("v1.0.0").
 		SetDescription("This CLI tool helps you configure and manage Philips Hue Lights")
 
 	// Configure the root-command
-	// $ gohue <category> --verbose | -V, --version| -V, --help | -h
+	// $ go-hue <category> --verbose | -V, --version| -V, --help | -h
 	commando.
 		Register(nil).
 		AddArgument("commands", "commands that the cli tool provide.", "").
@@ -78,13 +78,12 @@ func main() {
 			}
 		})
 
-	// Configure the list command
-	// $ gohue list
+	// Configure the lights command
+	// $ go-hue lights
 	commando.
-		Register("list").
+		Register("lights").
 		SetShortDescription("displays detailed information about all lights connected to your Philips Hue Bridge.").
 		SetDescription("this command displays more information about the state of all of the lights connected to your Philips Hue Bridge.").
-		AddArgument("group,g", "A Philips Hue Light Group that has been configured", "office-desk-lights.").
 		AddFlag("light,l", "A specific light you want the state of", commando.Int, 0).
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
 			// Print Arguments
@@ -98,6 +97,76 @@ func main() {
 			}
 			configData := readFromConfig()
 			getLightState(configData.HueIP, configData.HueUser)
+		})
+
+	// Configure the groups command
+	// $ go-hue groups
+	commando.
+		Register("get-groups").
+		SetShortDescription("displays detailed information about all lights connected to your Philips Hue Bridge.").
+		SetDescription("this command displays more information about the state of all of the lights connected to your Philips Hue Bridge.").
+		AddFlag("group,g", "A specific group you want the state of", commando.String, "default").
+		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
+			// Print Arguments
+			for k, v := range args {
+				fmt.Printf("arg -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+
+			// print flags
+			for k, v := range flags {
+				fmt.Printf("flag -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+			configData := readFromConfig()
+			getGroups(configData.HueIP, configData.HueUser)
+		})
+
+	// Configure the groups command
+	// $ go-hue groups
+	commando.
+		Register("set-groups").
+		SetShortDescription("Set values of a hue groups state").
+		SetDescription("this command sets the state of the specified groups lights connected to your Philips Hue Bridge.").
+		AddFlag("group,g", "A specific group you want so set the state of", commando.String, nil).
+		AddFlag("value,v", "Value to set the lights 'on' or 'off'", commando.String, nil).
+		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
+			// Print Arguments
+			for k, v := range args {
+				fmt.Printf("arg -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+
+			// print flags
+			for k, v := range flags {
+				fmt.Printf("flag -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+
+			fValue := flags["value"].Value
+			fGroup := flags["group"].Value
+			var value bool
+			var group string
+
+			if valueStr, ok := fValue.(string); ok {
+				/* act on str */
+				if valueStr == "on" {
+					value = true
+				} else if valueStr == "off" {
+					value = false
+				} else {
+					log.Fatalln("the value of 'value' must be either 'on' or 'off'")
+				}
+			} else {
+				/* not string */
+				log.Fatalln("Invalid value provided.")
+			}
+
+			if groupStr, ok := fGroup.(string); ok {
+				group = groupStr
+			} else {
+				log.Fatalln("Invalid value provided to 'group'")
+			}
+
+			configData := readFromConfig()
+			toggleGroup(configData.HueIP, configData.HueUser, group, value)
+			// getGroups(configData.HueIP, configData.HueUser)
 		})
 
 	// parse command-line arguments from the STDIN
