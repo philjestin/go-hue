@@ -55,6 +55,7 @@ func getLightState(hueIP net.IP, hueUser string) {
 	log.Printf(sb)
 }
 
+// getGroups retrieves data about groups from the Hue Bridge
 func getGroups(hueIP net.IP, hueUser string) {
 	// Groups URL
 	groupsURL := fmt.Sprintf("https://%s/api/%s/groups", hueIP, hueUser)
@@ -79,13 +80,13 @@ func toggleGroup(hueIP net.IP, hueUser string, group string, onValue bool) {
 	// marshal User to json
 	json, err := json.Marshal(on)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	// set the HTTP method, url, and request body
 	req, err := http.NewRequest(http.MethodPut, groupsURL, bytes.NewBuffer(json))
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	// set the request header Content-Type for json
