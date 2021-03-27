@@ -1,5 +1,8 @@
 # go-hue
 
+![go-version](https://img.shields.io/github/go-mod/go-version/philjestin/go-hue?label=Go%20Version) &nbsp;
+![release](https://github.com/philjestin/go-hue/workflows/release/badge.svg?style=flat-square)
+
 A command-line tool for controlling Philips Hue smart lights that are connected to a Philips Hue Bridge via the CLI.
 
 ## Setup
