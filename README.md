@@ -5,6 +5,12 @@
 
 A command-line tool for controlling Philips Hue smart lights that are connected to a Philips Hue Bridge via the CLI.
 
+## Installation
+
+```
+$ GO111MODULE=on go get -u "github.com/philjestin/go-hue"
+```
+
 ## Setup
 
 ```
