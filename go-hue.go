@@ -82,7 +82,7 @@ func main() {
 	// Configure the lights command
 	// $ go-hue lights
 	commando.
-		Register("lights").
+		Register("get-lights").
 		SetShortDescription("displays detailed information about all lights connected to your Philips Hue Bridge.").
 		SetDescription("this command displays more information about the state of all of the lights connected to your Philips Hue Bridge.").
 		AddFlag("light,l", "A specific light you want the state of", commando.Int, 0).
