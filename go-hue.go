@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/philjestin/go-hue/hue"
 	"github.com/thatisuday/commando"
 )
 
@@ -81,7 +82,7 @@ func main() {
 	// Configure the lights command
 	// $ go-hue lights
 	commando.
-		Register("lights").
+		Register("get-lights").
 		SetShortDescription("displays detailed information about all lights connected to your Philips Hue Bridge.").
 		SetDescription("this command displays more information about the state of all of the lights connected to your Philips Hue Bridge.").
 		AddFlag("light,l", "A specific light you want the state of", commando.Int, 0).
@@ -95,8 +96,9 @@ func main() {
 			for k, v := range flags {
 				fmt.Printf("flag -> %v: %v(%T)\n", k, v.Value, v.Value)
 			}
+
 			configData := readFromConfig()
-			getLightState(configData.HueIP, configData.HueUser)
+			hue.GetLightState(configData.HueIP, configData.HueUser)
 		})
 
 	// Configure the groups command
@@ -117,7 +119,7 @@ func main() {
 				fmt.Printf("flag -> %v: %v(%T)\n", k, v.Value, v.Value)
 			}
 			configData := readFromConfig()
-			getGroups(configData.HueIP, configData.HueUser)
+			hue.GetGroups(configData.HueIP, configData.HueUser)
 		})
 
 	// Configure the groups command
@@ -165,7 +167,71 @@ func main() {
 			}
 
 			configData := readFromConfig()
-			toggleGroup(configData.HueIP, configData.HueUser, group, value)
+
+			params := hue.ToggleParams{
+				HueIP:   configData.HueIP,
+				HueUser: configData.HueUser,
+				Item:    group,
+				OnValue: value,
+			}
+
+			hue.ToggleGroup(params)
+		})
+
+		// Configure the groups command
+	// $ go-hue groups
+	commando.
+		Register("set-lights").
+		SetShortDescription("Set values of a hue lights state").
+		SetDescription("this command sets the state of the specified light connected to your Philips Hue Bridge.").
+		AddFlag("light,l", "A specific light you want so set the state of", commando.String, nil).
+		AddFlag("value,v", "Value to set the light 'on' or 'off'", commando.String, nil).
+		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
+			// Print Arguments
+			for k, v := range args {
+				fmt.Printf("arg -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+
+			// print flags
+			for k, v := range flags {
+				fmt.Printf("flag -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+
+			fValue := flags["value"].Value
+			fLight := flags["light"].Value
+			var value bool
+			var light string
+
+			if valueStr, ok := fValue.(string); ok {
+				/* act on str */
+				if valueStr == "on" {
+					value = true
+				} else if valueStr == "off" {
+					value = false
+				} else {
+					log.Fatalln("the value of 'value' must be either 'on' or 'off'")
+				}
+			} else {
+				/* not string */
+				log.Fatalln("Invalid value provided.")
+			}
+
+			if lightStr, ok := fLight.(string); ok {
+				light = lightStr
+			} else {
+				log.Fatalln("Invalid value provided to 'group'")
+			}
+
+			configData := readFromConfig()
+
+			params := hue.ToggleParams{
+				HueIP:   configData.HueIP,
+				HueUser: configData.HueUser,
+				Item:    light,
+				OnValue: value,
+			}
+
+			hue.ToggleLight(params)
 		})
 
 	// parse command-line arguments from the STDIN
