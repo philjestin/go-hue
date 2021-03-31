@@ -151,7 +151,8 @@ func main() {
 		SetShortDescription("Set values of a hue groups state").
 		SetDescription("this command sets the state of the specified groups lights connected to your Philips Hue Bridge.").
 		AddFlag("group,g", "A specific group you want so set the state of", commando.String, nil).
-		AddFlag("value,v", "Value to set the lights 'on' or 'off'", commando.String, nil).
+		AddFlag("value,v", "Value to set the lights 'on' or 'off'", commando.String, "on").
+		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 1).
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
 			// Print Arguments
 			for k, v := range args {
@@ -165,8 +166,10 @@ func main() {
 
 			fValue := flags["value"].Value
 			fGroup := flags["group"].Value
+			fBright := flags["brightness"].Value
 			var value bool
 			var group string
+			var bright int
 
 			if valueStr, ok := fValue.(string); ok {
 				/* act on str */
@@ -188,28 +191,35 @@ func main() {
 				log.Fatalln("Invalid value provided to 'group'")
 			}
 
+			if brightInt, ok := fBright.(int); ok {
+				bright = brightInt
+			}
+
 			configData := readFromConfig()
 
-			params := hue.ToggleParams{
+			params := hue.LightsAuthAndBody{
 				Auth: hue.EndpointParams{
 					HueIP:   configData.HueIP,
 					HueUser: configData.HueUser,
 					Item:    group,
 				},
-				OnValue: value,
+				Body: hue.LightsBodyOptions{
+					On:         value,
+					Brightness: uint8(bright),
+				},
 			}
 
 			hue.ToggleGroup(params)
 		})
 
-		// Configure the groups command
-	// $ go-hue groups
+	// Configure the set-lights command
+	// $ go-hue set-lights
 	commando.
 		Register("set-lights").
 		SetShortDescription("Set values of a hue lights state").
 		SetDescription("this command sets the state of the specified light connected to your Philips Hue Bridge.").
 		AddFlag("light,l", "A specific light you want so set the state of", commando.String, nil).
-		AddFlag("value,v", "Value to set the light 'on' or 'off'", commando.String, nil).
+		AddFlag("value,v", "Value to set the light 'on' or 'off'", commando.String, "on").
 		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 1).
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
 			// Print Arguments
@@ -224,8 +234,10 @@ func main() {
 
 			fValue := flags["value"].Value
 			fLight := flags["light"].Value
+			fBright := flags["brightness"].Value
 			var value bool
 			var light string
+			var bright int
 
 			if valueStr, ok := fValue.(string); ok {
 				/* act on str */
@@ -247,6 +259,10 @@ func main() {
 				log.Fatalln("Invalid value provided to 'group'")
 			}
 
+			if brightInt, ok := fBright.(int); ok {
+				bright = brightInt
+			}
+
 			configData := readFromConfig()
 
 			params := hue.LightsAuthAndBody{
@@ -256,7 +272,8 @@ func main() {
 					Item:    light,
 				},
 				Body: hue.LightsBodyOptions{
-					On: value,
+					On:         value,
+					Brightness: uint8(bright),
 				},
 			}
 

@@ -24,14 +24,16 @@ func GetLightState(hueIP net.IP, hueUser string) {
 
 // ToggleLight is used to toggle a lights on/off value
 func ToggleLight(params LightsAuthAndBody) {
-	on := utils.On{
-		On: params.Body.On,
-	}
-
 	update := utils.UpdateObject{
 		URL:    fmt.Sprintf("https://%s/api/%s/lights/%s/state", params.Auth.HueIP, params.Auth.HueUser, params.Auth.Item),
 		Client: utils.GetClient(),
-		On:     on,
+		Body: utils.LightsBodyOptions{
+			On:         params.Body.On,
+			Brightness: params.Body.Brightness,
+			Saturation: params.Body.Saturation,
+			Hue:        params.Body.Hue,
+			Effect:     params.Body.Effect,
+		},
 	}
 
 	res := utils.UpdateItem(update)

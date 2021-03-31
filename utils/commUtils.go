@@ -14,11 +14,19 @@ type On struct {
 	On bool `json:"on"`
 }
 
+type LightsBodyOptions struct {
+	On         bool   `json:"on,omitempty" bson:",omitempty"`
+	Brightness uint8  `json:"bri,omitempty" bson:",omitempty"`
+	Hue        uint16 `json:"hue,omitempty" bson:",omitempty"`
+	Saturation uint8  `json:"sat,omitempty" bson:",omitempty"`
+	Effect     string `json:"effect,omitempty" bson:",omitempty"`
+}
+
 // UpdateObject required for updating an item
 type UpdateObject struct {
 	URL    string
 	Client *http.Client
-	On     On
+	Body   LightsBodyOptions
 }
 
 // GetClient returns a http Client with insecure skip verify set to true
@@ -51,7 +59,7 @@ func ReadResponseBody(resp *http.Response, err error) []byte {
 // UpdateItem is a helper func used for turning lights on and off
 func UpdateItem(updateItem UpdateObject) []byte {
 	// marshal User to json
-	json, err := json.Marshal(updateItem.On)
+	json, err := json.Marshal(updateItem.Body)
 	if err != nil {
 		log.Fatalln(err)
 	}
