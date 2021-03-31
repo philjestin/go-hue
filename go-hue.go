@@ -127,7 +127,7 @@ func main() {
 	// $ go-hue groups
 	commando.
 		Register("get-groups").
-		SetShortDescription("displays detailed information about all lights connected to your Philips Hue Bridge.").
+		SetShortDescription("displays detailed information about all groups connected to your Philips Hue Bridge.").
 		SetDescription("this command displays more information about the state of all of the lights connected to your Philips Hue Bridge.").
 		AddFlag("group,g", "A specific group you want the state of", commando.String, "default").
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
