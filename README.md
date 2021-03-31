@@ -14,11 +14,27 @@ go: downloading github.com/philjestin/go-hue v1.0.0
 go: extracting github.com/philjestin/go-hue v1.0.0
 ```
 
+## Bridge Discovery
+
+Is achieved through Philip Hues nupnp service.
+
+```
+$ go-hue discover
+flag -> help: false(bool)
+
+Your Philips Hue Bridge can be found at: <your-bridge-ip-found-here>
+```
+
 ## Setup
 
 ```
 $ mkdir config
 $ touch ./config/config.json
+$ go-hue discover
+flag -> help: false(bool)
+
+Your Philips Hue Bridge can be found at: <your-bridge-ip-found-here>
+
 $ go-hue config-set --ip <your-bridge-ip> --user-token <your-bridge-generated-token>
 ```
 
@@ -53,6 +69,17 @@ $ go-hue set-light -l "1" -v "off"
 2021/03/28 20:05:57 [{"success":{"/lights/1/state/on":false}}]
 ```
 
+### Set Light Brightness
+
+```
+$ go-hue set-lights -l 3 -b 255
+flag -> value: on(string)
+flag -> brightness: 255(int)
+flag -> help: false(bool)
+flag -> light: 3(string)
+2021/03/30 22:33:28 [{"success":{"/lights/3/state/on":true}},{"success":{"/lights/3/state/bri":254}}]
+```
+
 ### Turning Light Groups On
 
 ```
@@ -67,6 +94,17 @@ $ go-hue set-groups -g "1" -v "off"
 2021/03/27 15:41:46 [{"success":{"/groups/1/action/on":false}}]
 ```
 
+### Set Group Brightness
+
+```
+go-hue set-groups -g 2 -b 10
+flag -> help: false(bool)
+flag -> group: 2(string)
+flag -> value: on(string)
+flag -> brightness: 10(int)
+2021/03/30 22:35:14 [{"success":{"/groups/2/action/on":true}},{"success":{"/groups/2/action/bri":10}}]
+```
+
 ## Usage
 
 ```
@@ -79,10 +117,12 @@ Usage:
 Commands:
    config-get                    get your current go-hue configuration
    config-set                    configure the IP address and user token for authentication with the Philips Hue Bridge.
+   discover                      discover the hue bridge on your network.
    get-groups                    displays detailed information about all lights connected to your Philips Hue Bridge.
-   help                          displays usage information
-   lights                        displays detailed information about all lights connected to your Philips Hue Bridge.
+   get-lights                    displays detailed information about all lights connected to your Philips Hue Bridge.
+   help                          displays usage informationn
    set-groups                    Set values of a hue groups state
+   set-lights                    Set values of a hue lights state
    version                       displays version number
 
 Arguments:
