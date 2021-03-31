@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/philjestin/go-hue/hue"
+	"github.com/philjestin/go-hue/utils"
 	"github.com/thatisuday/commando"
 )
 
@@ -32,6 +33,27 @@ func main() {
 			for k, v := range flags {
 				fmt.Printf("flag -> %v: %v(%T)\n", k, v.Value, v.Value)
 			}
+		})
+
+	// Configure the root-command
+	// $ go-hue <category> --verbose | -V, --version| -V, --help | -h
+	commando.
+		Register("discover").
+		SetShortDescription("discover the hue bridge on your network.").
+		SetDescription("this command is used to discover the hue bridge on your network using Hue's nupnp service.").
+		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
+			// Print Arguments
+			for k, v := range args {
+				fmt.Printf("arg -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+
+			// print flags
+			for k, v := range flags {
+				fmt.Printf("flag -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+
+			bridges := utils.FindBridge()
+			fmt.Printf("Your Philips Hue Bridge can be found at: %s\n", bridges[0].Host)
 		})
 
 	commando.
@@ -169,9 +191,11 @@ func main() {
 			configData := readFromConfig()
 
 			params := hue.ToggleParams{
-				HueIP:   configData.HueIP,
-				HueUser: configData.HueUser,
-				Item:    group,
+				Auth: hue.EndpointParams{
+					HueIP:   configData.HueIP,
+					HueUser: configData.HueUser,
+					Item:    group,
+				},
 				OnValue: value,
 			}
 
@@ -186,6 +210,7 @@ func main() {
 		SetDescription("this command sets the state of the specified light connected to your Philips Hue Bridge.").
 		AddFlag("light,l", "A specific light you want so set the state of", commando.String, nil).
 		AddFlag("value,v", "Value to set the light 'on' or 'off'", commando.String, nil).
+		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 1).
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
 			// Print Arguments
 			for k, v := range args {
@@ -224,11 +249,15 @@ func main() {
 
 			configData := readFromConfig()
 
-			params := hue.ToggleParams{
-				HueIP:   configData.HueIP,
-				HueUser: configData.HueUser,
-				Item:    light,
-				OnValue: value,
+			params := hue.LightsAuthAndBody{
+				Auth: hue.EndpointParams{
+					HueIP:   configData.HueIP,
+					HueUser: configData.HueUser,
+					Item:    light,
+				},
+				Body: hue.LightsBodyOptions{
+					On: value,
+				},
 			}
 
 			hue.ToggleLight(params)
