@@ -214,6 +214,9 @@ func main() {
 			}
 
 			if effectString, ok := fEffect.(string); ok {
+				if effect != "none" || effect != "colorloop" {
+					log.Fatalln("Only 'none' and 'colorloop' are valid input for effect.")
+				}
 				effect = effectString
 			}
 
