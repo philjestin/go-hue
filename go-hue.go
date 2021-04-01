@@ -152,7 +152,8 @@ func main() {
 		SetDescription("this command sets the state of the specified groups lights connected to your Philips Hue Bridge.").
 		AddFlag("group,g", "A specific group you want so set the state of", commando.String, nil).
 		AddFlag("value,v", "Value to set the lights 'on' or 'off'", commando.String, "on").
-		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 1).
+		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 0).
+		AddFlag("saturation,s", "Value to set the saturation to, betwen 1 and 254. 254 is the most saturated (colored) and 0 is the least saturated (white)", commando.Int, 0).
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
 			// Print Arguments
 			for k, v := range args {
@@ -167,9 +168,11 @@ func main() {
 			fValue := flags["value"].Value
 			fGroup := flags["group"].Value
 			fBright := flags["brightness"].Value
+			fSat := flags["saturation"].Value
 			var value bool
 			var group string
 			var bright int
+			var sat int
 
 			if valueStr, ok := fValue.(string); ok {
 				/* act on str */
@@ -195,6 +198,10 @@ func main() {
 				bright = brightInt
 			}
 
+			if satInt, ok := fSat.(int); ok {
+				sat = satInt
+			}
+
 			configData := readFromConfig()
 
 			params := hue.LightsAuthAndBody{
@@ -206,6 +213,7 @@ func main() {
 				Body: hue.LightsBodyOptions{
 					On:         value,
 					Brightness: uint8(bright),
+					Saturation: uint8(sat),
 				},
 			}
 
@@ -220,7 +228,8 @@ func main() {
 		SetDescription("this command sets the state of the specified light connected to your Philips Hue Bridge.").
 		AddFlag("light,l", "A specific light you want so set the state of", commando.String, nil).
 		AddFlag("value,v", "Value to set the light 'on' or 'off'", commando.String, "on").
-		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 1).
+		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 0).
+		AddFlag("saturation,s", "Value to set the saturation to, betwen 1 and 254. 254 is the most saturated (colored) and 0 is the least saturated (white)", commando.Int, 0).
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
 			// Print Arguments
 			for k, v := range args {
@@ -235,9 +244,11 @@ func main() {
 			fValue := flags["value"].Value
 			fLight := flags["light"].Value
 			fBright := flags["brightness"].Value
+			fSat := flags["saturation"].Value
 			var value bool
 			var light string
 			var bright int
+			var sat int
 
 			if valueStr, ok := fValue.(string); ok {
 				/* act on str */
@@ -263,6 +274,10 @@ func main() {
 				bright = brightInt
 			}
 
+			if satInt, ok := fSat.(int); ok {
+				sat = satInt
+			}
+
 			configData := readFromConfig()
 
 			params := hue.LightsAuthAndBody{
@@ -274,6 +289,7 @@ func main() {
 				Body: hue.LightsBodyOptions{
 					On:         value,
 					Brightness: uint8(bright),
+					Saturation: uint8(sat),
 				},
 			}
 
