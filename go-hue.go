@@ -152,7 +152,10 @@ func main() {
 		SetDescription("this command sets the state of the specified groups lights connected to your Philips Hue Bridge.").
 		AddFlag("group,g", "A specific group you want so set the state of", commando.String, nil).
 		AddFlag("value,v", "Value to set the lights 'on' or 'off'", commando.String, "on").
-		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 1).
+		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 0).
+		AddFlag("saturation,s", "Value to set the saturation to, betwen 1 and 254. 254 is the most saturated (colored) and 0 is the least saturated (white)", commando.Int, 0).
+		AddFlag("hue,h", "Value to set the hue to. The hue value to set light to.The hue value is a wrapping value between 0 and 65535. Both 0 and 65535 are red, 25500 is green and 46920 is blue.", commando.Int, -1).
+		AddFlag("effect,e", "The dynamic effect of the light. Currently “none” and “colorloop” are supported. Other values will generate an error of type 7.Setting the effect to colorloop will cycle through all hues using the current brightness and saturation settings", commando.String, "none").
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
 			// Print Arguments
 			for k, v := range args {
@@ -167,9 +170,16 @@ func main() {
 			fValue := flags["value"].Value
 			fGroup := flags["group"].Value
 			fBright := flags["brightness"].Value
+			fSat := flags["saturation"].Value
+			fHue := flags["hue"].Value
+			fEffect := flags["effect"].Value
+
+			var setHue int
 			var value bool
 			var group string
 			var bright int
+			var sat int
+			var effect string
 
 			if valueStr, ok := fValue.(string); ok {
 				/* act on str */
@@ -195,6 +205,21 @@ func main() {
 				bright = brightInt
 			}
 
+			if satInt, ok := fSat.(int); ok {
+				sat = satInt
+			}
+
+			if hueInt, ok := fHue.(int); ok {
+				setHue = hueInt
+			}
+
+			if effectString, ok := fEffect.(string); ok {
+				if effect != "none" || effect != "colorloop" {
+					log.Fatalln("Only 'none' and 'colorloop' are valid input for effect.")
+				}
+				effect = effectString
+			}
+
 			configData := readFromConfig()
 
 			params := hue.LightsAuthAndBody{
@@ -206,6 +231,9 @@ func main() {
 				Body: hue.LightsBodyOptions{
 					On:         value,
 					Brightness: uint8(bright),
+					Saturation: uint8(sat),
+					Hue:        uint16(setHue),
+					Effect:     effect,
 				},
 			}
 
@@ -220,7 +248,10 @@ func main() {
 		SetDescription("this command sets the state of the specified light connected to your Philips Hue Bridge.").
 		AddFlag("light,l", "A specific light you want so set the state of", commando.String, nil).
 		AddFlag("value,v", "Value to set the light 'on' or 'off'", commando.String, "on").
-		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 1).
+		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 0).
+		AddFlag("saturation,s", "Value to set the saturation to, betwen 1 and 254. 254 is the most saturated (colored) and 0 is the least saturated (white)", commando.Int, 0).
+		AddFlag("hue,h", "Value to set the hue to. The hue value to set light to.The hue value is a wrapping value between 0 and 65535. Both 0 and 65535 are red, 25500 is green and 46920 is blue.", commando.Int, -1).
+		AddFlag("effect,e", "The dynamic effect of the light. Currently “none” and “colorloop” are supported. Other values will generate an error of type 7.Setting the effect to colorloop will cycle through all hues using the current brightness and saturation settings", commando.String, "none").
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
 			// Print Arguments
 			for k, v := range args {
@@ -235,9 +266,16 @@ func main() {
 			fValue := flags["value"].Value
 			fLight := flags["light"].Value
 			fBright := flags["brightness"].Value
+			fSat := flags["saturation"].Value
+			fHue := flags["hue"].Value
+			fEffect := flags["effect"].Value
+
 			var value bool
 			var light string
 			var bright int
+			var sat int
+			var setHue int
+			var effect string
 
 			if valueStr, ok := fValue.(string); ok {
 				/* act on str */
@@ -263,6 +301,21 @@ func main() {
 				bright = brightInt
 			}
 
+			if satInt, ok := fSat.(int); ok {
+				sat = satInt
+			}
+
+			if hueInt, ok := fHue.(int); ok {
+				setHue = hueInt
+			}
+
+			if effectString, ok := fEffect.(string); ok {
+				if effect != "none" || effect != "colorloop" {
+					log.Fatalln("Only 'none' and 'colorloop' are valid input for effect.")
+				}
+				effect = effectString
+			}
+
 			configData := readFromConfig()
 
 			params := hue.LightsAuthAndBody{
@@ -274,6 +327,9 @@ func main() {
 				Body: hue.LightsBodyOptions{
 					On:         value,
 					Brightness: uint8(bright),
+					Saturation: uint8(sat),
+					Hue:        uint16(setHue),
+					Effect:     effect,
 				},
 			}
 

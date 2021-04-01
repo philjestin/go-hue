@@ -42,5 +42,3 @@ func ToggleLight(params LightsAuthAndBody) {
 	sb := string(res)
 	log.Println(sb)
 }
-
-func SetLightState() {}
