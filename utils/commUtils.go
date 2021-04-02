@@ -9,13 +9,8 @@ import (
 	"net/http"
 )
 
-// On to turn on a item the request body
-type On struct {
-	On bool `json:"on"`
-}
-
 type LightsBodyOptions struct {
-	On         bool   `json:"on,omitempty" bson:",omitempty"`
+	On         *bool  `json:"on,omitempty" bson:",omitempty"`
 	Brightness uint8  `json:"bri,omitempty" bson:",omitempty"`
 	Hue        uint16 `json:"hue,omitempty" bson:",omitempty"`
 	Saturation uint8  `json:"sat,omitempty" bson:",omitempty"`
@@ -65,7 +60,6 @@ func UpdateItem(updateItem UpdateObject) []byte {
 		log.Fatalln(err)
 	}
 
-	println(string(json), "json")
 	// set the HTTP method, url, and request body
 	req, err := http.NewRequest(http.MethodPut, updateItem.URL, bytes.NewBuffer(json))
 	if err != nil {
