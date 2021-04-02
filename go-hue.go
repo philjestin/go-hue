@@ -120,7 +120,7 @@ func main() {
 				namesOnly = names
 			}
 
-			if namesOnly == true {
+			if namesOnly {
 				hue.GetScenesNames(configData.HueIP, configData.HueUser)
 			} else {
 				hue.GetScenes(configData.HueIP, configData.HueUser)

@@ -120,7 +120,8 @@ Commands:
    discover                      discover the hue bridge on your network.
    get-groups                    displays detailed information about all groups connected to your Philips Hue Bridge.
    get-lights                    displays detailed information about all lights connected to your Philips Hue Bridge.
-   help                          displays usage informationn
+   get-scenes                    displays detailed information about all scenes on your Philips Hue Bridge.
+   help                          displays usage information
    set-groups                    Set values of a hue groups state
    set-lights                    Set values of a hue lights state
    version                       displays version number
@@ -132,4 +133,5 @@ Flags:
    -h, --help                    displays usage information of the application or a command (default: false)
    -V, --verbose                 display log information (default: false)
    -v, --version                 displays version number (default: false)
+
 ```
