@@ -21,8 +21,19 @@ func GetGroups(hueIP net.IP, hueUser string) {
 	log.Println(sb)
 }
 
-// ToggleGroup is used to toggle a given groups on/off values
-func ToggleGroup(params LightsAuthAndBody) {
+// SetGroup is used to set the state values for a group.
+func SetGroup(params LightsAuthAndBody) {
+
+	if params.Body.Effect != "none" && params.Body.Effect != "colorloop" {
+		params.Body.Effect = ""
+	}
+
+	if params.Body.Scene == "potato" {
+		params.Body.Scene = ""
+	}
+
+	fmt.Println(params)
+
 	update := utils.UpdateObject{
 		URL:    fmt.Sprintf("https://%s/api/%s/groups/%s/action", params.Auth.HueIP, params.Auth.HueUser, params.Auth.Item),
 		Client: utils.GetClient(),

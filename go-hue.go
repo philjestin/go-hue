@@ -124,7 +124,7 @@ func main() {
 		})
 
 	// Configure the groups command
-	// $ go-hue groups
+	// $ go-hue get-groups
 	commando.
 		Register("get-groups").
 		SetShortDescription("displays detailed information about all groups connected to your Philips Hue Bridge.").
@@ -144,8 +144,41 @@ func main() {
 			hue.GetGroups(configData.HueIP, configData.HueUser)
 		})
 
-	// Configure the groups command
-	// $ go-hue groups
+	// Configure the scenes command
+	// $ go-hue get-scenes
+	commando.
+		Register("get-scenes").
+		SetShortDescription("displays detailed information about all scenes on your Philips Hue Bridge.").
+		SetDescription("this command displays more information about all of the scenes on your Philips Hue Bridge.").
+		AddFlag("names-only,n", "Return just the name of scenes", commando.Bool, "false").
+		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
+			// Print Arguments
+			for k, v := range args {
+				fmt.Printf("arg -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+
+			// print flags
+			for k, v := range flags {
+				fmt.Printf("flag -> %v: %v(%T)\n", k, v.Value, v.Value)
+			}
+
+			configData := readFromConfig()
+
+			fNames := flags["names-only"].Value
+			var namesOnly bool
+			if names, ok := fNames.(bool); ok {
+				namesOnly = names
+			}
+
+			if namesOnly == true {
+				hue.GetScenesNames(configData.HueIP, configData.HueUser)
+			} else {
+				hue.GetScenes(configData.HueIP, configData.HueUser)
+			}
+		})
+
+	// Configure the set-groups command
+	// $ go-hue set-groups
 	commando.
 		Register("set-groups").
 		SetShortDescription("Set values of a hue groups state").
@@ -154,8 +187,9 @@ func main() {
 		AddFlag("value,v", "Value to set the lights 'on' or 'off'", commando.String, "on").
 		AddFlag("brightness,b", "Value to set the brightness to, between 1 and 254", commando.Int, 0).
 		AddFlag("saturation,s", "Value to set the saturation to, betwen 1 and 254. 254 is the most saturated (colored) and 0 is the least saturated (white)", commando.Int, 0).
-		AddFlag("hue,h", "Value to set the hue to. The hue value to set light to.The hue value is a wrapping value between 0 and 65535. Both 0 and 65535 are red, 25500 is green and 46920 is blue.", commando.Int, -1).
-		AddFlag("effect,e", "The dynamic effect of the light. Currently “none” and “colorloop” are supported. Other values will generate an error of type 7.Setting the effect to colorloop will cycle through all hues using the current brightness and saturation settings", commando.String, "none").
+		AddFlag("hue,h", "Value to set the hue to. The hue value to set light to.The hue value is a wrapping value between 0 and 65535. Both 0 and 65535 are red, 25500 is green and 46920 is blue.", commando.Int, 0).
+		AddFlag("effect,e", "The dynamic effect of the light. Currently “none” and “colorloop” are supported. Other values will generate an error of type 7.Setting the effect to colorloop will cycle through all hues using the current brightness and saturation settings", commando.String, "potato").
+		AddFlag("scene,c", "The scene that you would like to set the light to", commando.String, "potato").
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
 			// Print Arguments
 			for k, v := range args {
@@ -173,6 +207,7 @@ func main() {
 			fSat := flags["saturation"].Value
 			fHue := flags["hue"].Value
 			fEffect := flags["effect"].Value
+			fScene := flags["scene"].Value
 
 			var setHue int
 			var value bool
@@ -180,6 +215,7 @@ func main() {
 			var bright int
 			var sat int
 			var effect string
+			var scene string
 
 			if valueStr, ok := fValue.(string); ok {
 				/* act on str */
@@ -213,10 +249,11 @@ func main() {
 				setHue = hueInt
 			}
 
+			if sceneStr, ok := fScene.(string); ok {
+				scene = sceneStr
+			}
+
 			if effectString, ok := fEffect.(string); ok {
-				if effect != "none" || effect != "colorloop" {
-					log.Fatalln("Only 'none' and 'colorloop' are valid input for effect.")
-				}
 				effect = effectString
 			}
 
@@ -234,10 +271,11 @@ func main() {
 					Saturation: uint8(sat),
 					Hue:        uint16(setHue),
 					Effect:     effect,
+					Scene:      scene,
 				},
 			}
 
-			hue.ToggleGroup(params)
+			hue.SetGroup(params)
 		})
 
 	// Configure the set-lights command
@@ -310,9 +348,6 @@ func main() {
 			}
 
 			if effectString, ok := fEffect.(string); ok {
-				if effect != "none" || effect != "colorloop" {
-					log.Fatalln("Only 'none' and 'colorloop' are valid input for effect.")
-				}
 				effect = effectString
 			}
 
