@@ -57,9 +57,10 @@ func GetScenesNames(hueIP net.IP, hueUser string) {
 	// Duplice scene names exist because there are scenes per light.
 	// Turn the slice of scenes into a set.
 	var set []string
-	for _, g := range m {
+	for i, g := range m {
 		if !contains(set, g.SceneName) {
-			set = append(set, g.SceneName)
+			val := fmt.Sprintf("Scene ID: %s | Scene Name: %s", i, g.SceneName)
+			set = append(set, val)
 		}
 	}
 

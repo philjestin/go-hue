@@ -20,6 +20,7 @@ type LightsBodyOptions struct {
 	Hue        uint16 `json:"hue,omitempty" bson:",omitempty"`
 	Saturation uint8  `json:"sat,omitempty" bson:",omitempty"`
 	Effect     string `json:"effect,omitempty" bson:",omitempty"`
+	Scene      string `json:"scene,omitempty" bson:",omitempty"`
 }
 
 // UpdateObject required for updating an item
@@ -64,6 +65,7 @@ func UpdateItem(updateItem UpdateObject) []byte {
 		log.Fatalln(err)
 	}
 
+	println(string(json), "json")
 	// set the HTTP method, url, and request body
 	req, err := http.NewRequest(http.MethodPut, updateItem.URL, bytes.NewBuffer(json))
 	if err != nil {

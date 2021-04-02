@@ -32,8 +32,6 @@ func SetGroup(params LightsAuthAndBody) {
 		params.Body.Scene = ""
 	}
 
-	fmt.Println(params)
-
 	update := utils.UpdateObject{
 		URL:    fmt.Sprintf("https://%s/api/%s/groups/%s/action", params.Auth.HueIP, params.Auth.HueUser, params.Auth.Item),
 		Client: utils.GetClient(),
@@ -43,6 +41,7 @@ func SetGroup(params LightsAuthAndBody) {
 			Saturation: params.Body.Saturation,
 			Hue:        params.Body.Hue,
 			Effect:     params.Body.Effect,
+			Scene:      params.Body.Scene,
 		}}
 
 	res := utils.UpdateItem(update)
