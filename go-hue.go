@@ -81,7 +81,7 @@ func main() {
 		})
 
 	// Configure the lights command
-	// $ go-hue lights
+	// $ go-hue get-lights
 	commando.
 		Register("get-lights").
 		SetShortDescription("displays detailed information about all lights connected to your Philips Hue Bridge.").

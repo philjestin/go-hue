@@ -28,14 +28,6 @@ type LightsBodyOptions struct {
 	Scene      string `json:"scene,omitempty" bson:",omitempty"`
 }
 
-type NoEffect struct {
-	On         *bool  `json:"on,omitempty" bson:",omitempty"`
-	Brightness uint8  `json:"bri,omitempty" bson:",omitempty"`
-	Hue        uint16 `json:"hue,omitempty" bson:",omitempty"`
-	Saturation uint8  `json:"sat,omitempty" bson:",omitempty"`
-	Scene      string `json:"scene,omitempty" bson:",omitempty"`
-}
-
 type LightsAuthAndBody struct {
 	Auth EndpointParams
 	Body LightsBodyOptions
