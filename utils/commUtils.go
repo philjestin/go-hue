@@ -9,17 +9,13 @@ import (
 	"net/http"
 )
 
-// On to turn on a item the request body
-type On struct {
-	On bool `json:"on"`
-}
-
 type LightsBodyOptions struct {
-	On         bool   `json:"on,omitempty" bson:",omitempty"`
+	On         *bool  `json:"on,omitempty" bson:",omitempty"`
 	Brightness uint8  `json:"bri,omitempty" bson:",omitempty"`
 	Hue        uint16 `json:"hue,omitempty" bson:",omitempty"`
 	Saturation uint8  `json:"sat,omitempty" bson:",omitempty"`
 	Effect     string `json:"effect,omitempty" bson:",omitempty"`
+	Scene      string `json:"scene,omitempty" bson:",omitempty"`
 }
 
 // UpdateObject required for updating an item
